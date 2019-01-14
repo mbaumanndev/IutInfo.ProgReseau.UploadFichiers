@@ -1,0 +1,82 @@
+﻿
+
+<form asp-action="Simple" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <input type="submit" value="Envoyer" />
+</form>
+
+<hr />
+
+<form asp-action="Flux" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <input type="submit" value="Envoyer" />
+</form>
+
+<hr />
+
+<form id="formPartition" asp-action="Partition" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" id="inputFile" />
+    <input type="submit" value="Envoyer" id="submitButton" />
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var $form = $('#formPartition')
+            var $input = $('#inputFile')
+            var $button = $('#submitButton')
+
+            var fragmentation = function (fichier) {
+                console.log(fichier)
+                var tailleFragmentMB = 1
+                var tailleBuffer = tailleFragmentMB * 1024 * 1024
+                var fragments = []
+                var position = 0
+                var finFragment = tailleBuffer
+                var taillerFichier = fichier.size
+
+                while (position < taillerFichier) {
+                    var fragmentTemp = fichier.slice(position, finFragment)
+                    fragments.push(fragmentTemp)
+                    position = finFragment
+                    finFragment += tailleBuffer
+                }
+
+                var total = fragments.length
+                var courant = 0
+
+                while (fragment = fragments.shift()) {
+                    courant++
+                    nomFragment = fichier.name + ".part_" + courant + "." + total
+                    envoieFragment(fragment, nomFragment)
+                }
+
+            }
+
+            var envoieFragment = function (fragment, nomDuFragment) {
+                var data = new FormData()
+
+                data.append('file', fragment, nomDuFragment)
+
+                $.ajax({
+                    type: 'POST',
+                    url: $form.attr('action'),
+                    contentType: false,
+                    processData: false,
+                    data: data
+                })
+                    .done(function () {
+                        console.log('ok', nomDuFragment)
+                    })
+                    .fail(function () {
+                        console.error('ko', nomDuFragment)
+                    })
+            }
+
+            $form.on('submit', function (e) {
+                e.preventDefault()
+                fragmentation($input.get(0).files[0])
+            })
+        })
+    </script>
+}
