@@ -260,5 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 
-IutInfo.ProgReseau.UploadFichiers.WebUi/*
-!IutInfo.ProgReseau.UploadFichiers.WebUi/.gitkeep
+./IutInfo.ProgReseau.UploadFichiers.WebUi/*
+!./IutInfo.ProgReseau.UploadFichiers.WebUi/.gitkeep
